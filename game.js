@@ -47,12 +47,15 @@ class Actor {
     }
 
     isIntersect(actor) {
+        // лучше сначала проверить аргументы функции, а потом писать основной код
         if (actor && actor instanceof Actor) {
             if (actor === this) {
                 return false;
             }
+            // зачем эти рассчёты?
             let centerX = (actor.right + actor.left) / 2;
             let centerY = (actor.bottom + actor.top) / 2;
+            // в таких случаях лучше писать прсто return <выражение из if>
             if (this.left < centerX && centerX < this.right && this.top < centerY && centerY < this.bottom) {
                   return true;
             }
@@ -70,6 +73,9 @@ class Level{
         this.player = actors.find(item => item.type === 'player');
         this.height = this.grid.length;
         this.width = 0;
+
+        // let of редко используется, чаще просто цикл или forEach
+        // в данном случае лучше использовать reduce или Math.max + map
         for (let elem of this.grid) {
             if (elem) {
                 if (this.width < elem.length) {
@@ -88,7 +94,9 @@ class Level{
     actorAt(actor) {
         if (actor && actor instanceof Actor) {
             return this.actors.find(elem => actor.isIntersect(elem));
+            // else не нужен, т.к. в if return
         } else {
+            // проверки аргументов лучше делать в начале функции
             throw new Error('Можно передавать только объекты типа Actor и аргумент не может быть пустым');
         }
     }
@@ -107,6 +115,8 @@ class Level{
             if (bottomBorder > this.height) {
                 return 'lava';
             }
+
+            // округлённые значение лучше записать в переменне, чтобы не округлять на каждой итерации цикла
             for (let y = Math.floor(topBorder); y < Math.ceil(bottomBorder); y++) {
                 for (let x = Math.floor(leftBorder); x < Math.ceil(rightBorder); x++) {
                     const fieldType = this.grid[y][x];
@@ -116,15 +126,18 @@ class Level{
                 }
             }
         } else {
+            // проверки аргументов лучше делать в начале функции
             throw new Error('Можно передавать только объекты типа Vector');
         }
     }
 
     removeActor(actor) {
+        // если заменить на цикл код станет проще
         let i = 0;
         for (let elem of this.actors) {
             if (actor === elem) {
                 this.actors.splice(i,1);
+                // тут можно добавить return чтобы остановить перебор элементов когда нужный уже удалён
             }
             i++;
         }
@@ -156,11 +169,14 @@ class Level{
 }
 
 class LevelParser {
+    // здесь можно добавить значение по-умолчанию
     constructor(dictionary) {
+        // тут лучше создать копию объекта, чтобы поле нельзя было изменить извне
         this.dictionary = dictionary;
     }
 
     actorFromSymbol(symbol) {
+        // проверка лишняя
         if (!symbol) {
             return undefined;
         }
@@ -174,13 +190,16 @@ class LevelParser {
         if (symbol === '!') {
             return 'lava';
         }
+        // лишняя строчка, фукнция, возвращает undefined, если не указано другое
         return undefined;
     }
 
     createGrid(arrString) {
+        // значение присваивается переменной один раз, поэтому лучше использовать const
         let arr = [];
         let bigArr = [];
         let i = 0;
+        // более изящное решение - использовать map 2 раза
         if (arrString.length != 0) {
             for (let key of arrString) {
                 for (let symbol of key) {
@@ -196,12 +215,16 @@ class LevelParser {
     }
 
     createActors(arrString) {
+        // значение присваивается переменной один раз, поэтому лучше использовать const
         let arr = [];
         let i = 0;
         let j = 0;
         if (arrString.length != 0 && this.dictionary !== undefined) {
+            // for let of лучше заменить простым циклом или forEach
             for (let key of arrString) {
                 for (let obj of key) {
+                    // тут лучше объявить несколько переменных,
+                    // например чтобы не писать везде this.dictionary[obj]
                     if (obj in this.dictionary) {
                      if (Actor.isPrototypeOf(this.dictionary[obj]) || this.dictionary[obj] === Actor) {
                         arr.push(new this.dictionary[obj](new Vector(i, j)));
@@ -274,6 +297,7 @@ class FireRain extends Fireball {
 }
 
 class Coin extends Actor {
+    // лучше не опускать аргументы конструктора Vector - его может кто-нибудь поменять, а код сломается ваш
     constructor(pos = new Vector()) {
         super(pos.plus(new Vector(0.2,0.1)), new Vector(0.6, 0.6));
         this.springSpeed = 8;
