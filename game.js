@@ -7,7 +7,7 @@ class Vector {
 
     plus(vector) {
         if (vector instanceof Vector) {
-          return new Vector(this.x + vector.x, this.y + vector.y);
+            return new Vector(this.x + vector.x, this.y + vector.y);
         }
         throw new Error('Можно прибавлять к вектору только вектор типа Vector');
     }
@@ -291,7 +291,7 @@ const actors = {
     '|': VerticalFireball
 };
 const parser = new LevelParser(actors);
-
+ 
 loadLevels()
     .then(
         response => {
