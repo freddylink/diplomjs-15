@@ -291,7 +291,7 @@ const actors = {
     '|': VerticalFireball
 };
 const parser = new LevelParser(actors);
-
+ 
 loadLevels()
     .then(
         response => {
